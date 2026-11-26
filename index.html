@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TaleemBox — Digital Study Library</title>
+  <meta name="description" content="TaleemBox: Smart Digital Study Library for Books, Notes & Past Papers" />
+  <meta name="theme-color" content="#047857" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <style>
+    :root {
+      --primary: #047857;
+      --primary-dark: #065f46;
+      --primary-soft: #ecfdf5;
+      --gold: #d97706;
+      --gold-soft: #fef3c7;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+      --shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      --radius: 16px;
+    }
+    body.dark {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-soft: rgba(16, 185, 129, 0.14);
+      --gold: #f59e0b;
+      --gold-soft: rgba(245, 158, 11, 0.16);
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.2s, color 0.2s; }
+    .hidden { display: none !important; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 16px; border: none; border-radius: 11px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: 0.2s; text-decoration: none;
+    }
+    .btn-primary { background: #047857; color: #fff; }
+    .btn-primary:hover { background: #065f46; }
+    .btn-gold { background: var(--gold); color: #fff; }
+    .btn-wa { background: #16a34a; color: #fff; }
+    .btn-wa:hover { background: #15803d; }
+    .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 7px 12px; font-size: 12.5px; border-radius: 9px; }
+    .btn-full { width: 100%; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Splash / Loader */
+    .center-screen {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px; text-align: center;
+    }
+    .spinner {
+      width: 38px; height: 38px; border: 4px solid var(--border); border-top-color: #047857;
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Login Screen */
+    .login-page {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px 16px 36px;
+      background: linear-gradient(180deg, #047857 0%, #065f46 210px, var(--bg) 210px);
+    }
+    .install-pill-top {
+      background: rgba(255,255,255,0.16); color: #fff; border: 1px solid rgba(255,255,255,0.35);
+      padding: 7px 14px; border-radius: 30px; font-size: 13px; font-weight: 700;
+      margin-bottom: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      backdrop-filter: blur(6px);
+    }
+    .login-brand { text-align: center; color: #fff; margin-bottom: 18px; }
+    .login-brand img { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); margin-bottom: 8px; }
+    .login-brand h1 { font-size: 26px; font-weight: 800; letter-spacing: 0.3px; }
+    .login-brand h1 span { color: #fbbf24; }
+    .login-brand p { font-size: 13px; opacity: 0.9; margin-top: 2px; }
+
+    .login-card {
+      background: var(--card); width: 100%; max-width: 410px; border-radius: 20px;
+      padding: 24px 20px; box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+    .input-wrap { position: relative; }
+    input[type="email"], input[type="password"], input[type="text"] {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 11px;
+      font-size: 14.5px; background: var(--bg); color: var(--text); outline: none; transition: 0.2s;
+    }
+    input:focus { border-color: var(--primary); }
+    .eye-btn {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; font-size: 16px; cursor: pointer; color: var(--muted);
+    }
+
+    .sub-box {
+      width: 100%; max-width: 410px; margin-top: 16px; background: var(--card);
+      border-radius: 18px; padding: 18px; border: 1px solid var(--border); box-shadow: var(--shadow);
+    }
+    .sub-box h3 { font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 6px; }
+    .sub-box p { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+    .pkg-pre {
+      background: var(--primary-soft); border: 1px solid rgba(4,120,87,0.2); border-radius: 12px;
+      padding: 12px; font-size: 13px; line-height: 1.65; white-space: pre-wrap; margin-bottom: 12px;
+      font-weight: 600; color: var(--text);
+    }
+
+    /* App Header */
+    .app-header {
+      background: #047857; color: #fff; padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 40; box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    .hdr-brand { display: flex; align-items: center; gap: 10px; }
+    .hdr-brand img { width: 34px; height: 34px; border-radius: 9px; }
+    .hdr-brand span { font-size: 19px; font-weight: 800; }
+    .hdr-brand span b { color: #fbbf24; }
+    .hdr-actions { display: flex; align-items: center; gap: 8px; }
+    .hdr-icon-btn {
+      background: rgba(255,255,255,0.16); color: #fff; border: none; border-radius: 9px;
+      padding: 7px 11px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    }
+
+    /* Main Container */
+    .main-wrap { max-width: 960px; margin: 0 auto; padding: 16px 14px 86px; }
+
+    /* Greeting & Expiry Warning */
+    .greet-row {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+      gap: 8px; margin-bottom: 14px;
+    }
+    .greet-title { font-size: 18px; font-weight: 800; }
+    .greet-sub { font-size: 12.5px; color: var(--muted); }
+    .plan-chip {
+      background: var(--primary-soft); color: var(--primary); padding: 5px 11px;
+      border-radius: 20px; font-size: 12px; font-weight: 700;
+    }
+    .plan-chip.warn { background: var(--gold-soft); color: var(--gold); }
+
+    /* Square Grid Boxes */
+    .boxes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 640px) { .boxes-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+    @media (min-width: 900px) { .boxes-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+
+    .box-card {
+      position: relative; background: var(--card); border: 1.5px solid var(--border);
+      border-radius: 18px; padding: 20px 14px 16px; text-align: center; cursor: pointer;
+      box-shadow: var(--shadow); transition: transform 0.15s, border-color 0.15s;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 146px;
+    }
+    .box-card:active { transform: scale(0.97); }
+    .box-card.unlocked:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .box-card.locked { opacity: 0.86; background: linear-gradient(145deg, var(--card), var(--bg)); }
+    .box-card.locked .box-emoji { filter: grayscale(35%); }
+
+    .box-emoji { font-size: 38px; line-height: 1; margin-bottom: 10px; }
+    .box-name { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.3; margin-bottom: 6px; }
+    .box-count { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .box-badge-top {
+      position: absolute; top: 10px; right: 10px; padding: 3px 8px;
+      border-radius: 20px; font-size: 11px; font-weight: 800;
+    }
+    .badge-lock { background: var(--gold-soft); color: var(--gold); border: 1px solid rgba(217,119,6,0.3); }
+    .badge-open { background: var(--primary-soft); color: var(--primary); }
+    .badge-demo-pill {
+      position: absolute; top: 10px; left: 10px; background: #047857; color: #fff;
+      padding: 2px 7px; border-radius: 12px; font-size: 10px; font-weight: 700;
+    }
+
+    /* Breadcrumb / Back Bar */
+    .sub-header {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .back-btn {
+      background: var(--card); border: 1.5px solid var(--border); color: var(--text);
+      padding: 8px 13px; border-radius: 11px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+    }
+    .sub-title { font-size: 17px; font-weight: 800; }
+
+    /* Subject Filter Pills */
+    .filter-scroll {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    .subj-pill {
+      padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: var(--card); color: var(--muted); font-size: 13px; font-weight: 700;
+      cursor: pointer; white-space: nowrap;
+    }
+    .subj-pill.active { background: #047857; color: #fff; border-color: #047857; }
+
+    /* PDF Cards */
+    .pdf-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 13px 14px; margin-bottom: 10px; display: flex; align-items: center;
+      justify-content: space-between; gap: 10px; box-shadow: var(--shadow);
+    }
+    .pdf-info { flex: 1; min-width: 0; }
+    .pdf-title { font-size: 14.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; word-break: break-word; }
+    .pdf-meta { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .tag-new { background: #dc2626; color: #fff; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+    .tag-subj { background: var(--primary-soft); color: var(--primary); padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .tag-demo { background: var(--gold-soft); color: var(--gold); padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .pdf-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .star-btn {
+      background: var(--bg); border: 1px solid var(--border); width: 34px; height: 34px;
+      border-radius: 10px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Settings & Profile Cards */
+    .info-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
+    }
+    .info-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+    }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-row span { color: var(--muted); font-size: 13px; }
+    .info-row b { text-align: right; }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 64px;
+      background: var(--card); border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-around;
+      z-index: 50; box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+    }
+    .bnav-btn {
+      flex: 1; height: 100%; background: none; border: none; color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+    }
+    .bnav-btn .ico { font-size: 20px; line-height: 1; }
+    .bnav-btn.active { color: var(--primary); }
+
+    /* Modal Popup */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.62); z-index: 120;
+      display: flex; align-items: center; justify-content: center; padding: 18px;
+      backdrop-filter: blur(3px);
+    }
+    .modal-box {
+      background: var(--card); width: 100%; max-width: 390px; border-radius: 20px;
+      padding: 24px 20px; text-align: center; box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+    }
+    .modal-ico { font-size: 46px; margin-bottom: 10px; }
+    .modal-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .modal-box p { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
+
+    /* Fullscreen Hidden PDF Reader */
+    .reader-overlay {
+      position: fixed; inset: 0; z-index: 200; background: #1e293b;
+      display: flex; flex-direction: column;
+    }
+    .reader-bar {
+      height: 54px; background: #047857; color: #fff; padding: 0 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      flex-shrink: 0;
+    }
+    .reader-title {
+      flex: 1; font-size: 14px; font-weight: 700; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .reader-stage {
+      position: relative; flex: 1; width: 100%; height: 100%; overflow: hidden; background: #334155;
+    }
+    .reader-frame { width: 100%; height: 100%; border: none; display: block; }
+    /* Shield over Google Drive top-right Pop-out button */
+    .popout-shield {
+      position: absolute; top: 0; right: 0; width: 70px; height: 60px;
+      background: #323639; z-index: 15; display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.65); font-size: 11px; font-weight: 800; user-select: none;
+    }
+    /* Dynamic Anti-Piracy Watermark */
+    .watermark-layer {
+      position: absolute; inset: 0; z-index: 10; pointer-events: none; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+      opacity: 0.13; user-select: none;
+    }
+    .wm-text {
+      font-size: 15px; font-weight: 800; color: #000; transform: rotate(-24deg);
+      white-space: nowrap; text-shadow: 0 0 2px #fff; letter-spacing: 1px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%);
+      background: #0f172a; color: #fff; padding: 10px 18px; border-radius: 30px;
+      font-size: 13px; font-weight: 700; z-index: 250; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      white-space: nowrap; max-width: 92vw; overflow: hidden; text-overflow: ellipsis;
+    }
+    .toast.success { background: #047857; }
+    .toast.error { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen" class="center-screen">
+  <img src="./icon-192.png" alt="TB" style="width:68px;height:68px;border-radius:16px;margin-bottom:16px;" />
+  <div class="spinner"></div>
+  <p style="font-size:14px;font-weight:700;color:var(--muted);">Loading TaleemBox...</p>
+</div>
+
+<!-- STATUS / BLOCK / EXPIRED / DEVICE LIMIT / MAINTENANCE SCREEN -->
+<div id="statusScreen" class="center-screen hidden">
+  <div class="modal-box" style="max-width:410px;">
+    <div id="stIcon" class="modal-ico">🔒</div>
+    <h3 id="stTitle">Access Restricted</h3>
+    <p id="stMsg"></p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <a id="stWaBtn" target="_blank" class="btn btn-wa btn-full">💬 Contact Admin on WhatsApp</a>
+      <button id="stRetryBtn" class="btn btn-outline btn-full">🔄 Check Again</button>
+      <button id="stLogoutBtn" class="btn btn-outline btn-full" style="color:var(--danger);border-color:rgba(220,38,38,0.3);">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-page hidden">
+  <button id="installBtnLogin" class="install-pill-top hidden">📲 Install TaleemBox App</button>
+
+  <div class="login-brand">
+    <img src="./icon-192.png" alt="TaleemBox" />
+    <h1>Taleem<span>Box</span></h1>
+    <p>Smart Digital Study Library</p>
+  </div>
+
+  <div class="login-card">
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Gmail Address</label>
+        <input type="email" id="loginEmail" placeholder="student@gmail.com" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label>Login Code / Password</label>
+        <div class="input-wrap">
+          <input type="password" id="loginPass" placeholder="Enter your password" required autocomplete="current-password" />
+          <button type="button" id="toggleEye" class="eye-btn">👁️</button>
+        </div>
+      </div>
+      <button type="submit" id="loginSubmitBtn" class="btn btn-primary btn-full">Sign In</button>
+    </form>
+  </div>
+
+  <div class="sub-box">
+    <h3>📦 Get Subscription / سبسکرپشن حاصل کریں</h3>
+    <p>Account nahi hai? Apni class aur devices ke mutabiq package select kar ke WhatsApp par rabta karein:</p>
+    <div id="loginPackagesBox" class="pkg-pre">1 Month • 2 Months • 3 Months • Lifetime Plans Available</div>
+    <a id="loginWaBtn" target="_blank" class="btn btn-wa btn-full">💬 Get Subscription on WhatsApp</a>
+  </div>
+</div>
+
+<!-- MAIN LOGGED-IN APP -->
+<div id="mainApp" class="hidden">
+  <header class="app-header">
+    <div class="hdr-brand">
+      <img src="./icon-192.png" alt="TB" />
+      <span>Taleem<b>Box</b></span>
+    </div>
+    <div class="hdr-actions">
+      <button id="installBtnHeader" class="hdr-icon-btn hidden">📲 Install</button>
+      <button id="themeToggleTop" class="hdr-icon-btn" title="Dark / Light Mode">🌙</button>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <!-- VIEW 1: HOME (DYNAMIC BOXES -> SUB-BOXES -> PDFS) -->
+    <section id="view-home" class="app-view">
+      <!-- Level 1: Main Boxes -->
+      <div id="homeLevel1">
+        <div class="greet-row">
+          <div>
+            <div class="greet-title" id="welcomeUser">Assalam-o-Alaikum!</div>
+            <div class="greet-sub">Apni class ya book box select karein</div>
+          </div>
+          <div id="planStatusChip" class="plan-chip">Active</div>
+        </div>
+        <div id="boxesGrid" class="boxes-grid"></div>
+      </div>
+
+      <!-- Level 2: Inside a Box (Sub-Boxes) -->
+      <div id="homeLevel2" class="hidden">
+        <div class="sub-header">
+          <button id="backToHomeBtn" class="back-btn">← Home</button>
+          <div id="selectedBoxTitle" class="sub-title">9th Class</div>
+        </div>
+        <div id="subBoxesGrid" class="boxes-grid"></div>
+      </div>
+
+      <!-- Level 3: Inside Sub-Box (PDF List + Auto-Hide Subject Filter) -->
+      <div id="homeLevel3" class="hidden">
+        <div class="sub-header">
+          <button id="backToSubBtn" class="back-btn">← Back</button>
+          <div id="selectedSubTitle" class="sub-title">Notes</div>
+        </div>
+        <div id="subjectFilterBar" class="filter-scroll hidden"></div>
+        <div id="pdfCardsList"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: SEARCH -->
+    <section id="view-search" class="app-view hidden">
+      <div class="form-group">
+        <input type="text" id="globalSearchInput" placeholder="🔍 Search book, notes, subject or class..." />
+      </div>
+      <div id="searchResultsList"></div>
+    </section>
+
+    <!-- VIEW 3: SAVED & RESUME READING -->
+    <section id="view-saved" class="app-view hidden">
+      <div id="resumeBox" class="hidden" style="margin-bottom:18px;">
+        <h3 style="font-size:15px;font-weight:800;margin-bottom:8px;color:var(--primary);">📖 Continue Reading</h3>
+        <div id="resumeCardSlot"></div>
+      </div>
+      <h3 style="font-size:15px;font-weight:800;margin-bottom:8px;">⭐ Saved / Bookmarked Notes</h3>
+      <div id="savedList"></div>
+    </section>
+
+    <!-- VIEW 4: SETTINGS & PROFILE -->
+    <section id="view-settings" class="app-view hidden">
+      <div class="info-card">
+        <h3 style="font-size:16px;font-weight:800;margin-bottom:8px;color:var(--primary);">👤 My Subscription</h3>
+        <div class="info-row"><span>Name</span><b id="profName">—</b></div>
+        <div class="info-row"><span>Gmail</span><b id="profEmail">—</b></div>
+        <div class="info-row"><span>Plan</span><b id="profPlan">—</b></div>
+        <div class="info-row"><span>Expiry</span><b id="profExpiry">—</b></div>
+        <div class="info-row"><span>Devices Used</span><b id="profDevices">—</b></div>
+        <div class="info-row"><span>Unlocked Boxes</span><b id="profBoxes">—</b></div>
+        <div style="margin-top:14px;">
+          <a id="renewWaBtn" target="_blank" class="btn btn-wa btn-full btn-sm">💬 Renew / Upgrade Plan on WhatsApp</a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3 style="font-size:16px;font-weight:800;margin-bottom:10px;">⚙️ App Settings</h3>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <button id="settingDarkBtn" class="btn btn-outline btn-full">🌙 Switch Dark / Light Mode</button>
+          <button id="settingInstallBtn" class="btn btn-primary btn-full">📲 Install App on Device</button>
+          <button id="settingSyncBtn" class="btn btn-outline btn-full">🔄 Refresh Library & New Notes</button>
+          <a id="settingHelpWa" target="_blank" class="btn btn-gold btn-full">💬 Help & Support (WhatsApp)</a>
+          <button id="settingLogoutBtn" class="btn btn-danger btn-full">🚪 Logout</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="bnav-btn active" data-view="home"><span class="ico">🏠</span><span>Home</span></button>
+    <button class="bnav-btn" data-view="search"><span class="ico">🔍</span><span>Search</span></button>
+    <button class="bnav-btn" data-view="saved"><span class="ico">⭐</span><span>Saved</span></button>
+    <button class="bnav-btn" data-view="settings"><span class="ico">⚙️</span><span>Settings</span></button>
+  </nav>
+</div>
+
+<!-- LOCKED BOX POPUP MODAL -->
+<div id="lockModal" class="modal-bg hidden">
+  <div class="modal-box">
+    <div class="modal-ico">🔒</div>
+    <h3 id="lockModalTitle">Class Locked</h3>
+    <p id="lockModalMsg">Yeh section aapke current plan mein shamil nahi hai. Ise unlock karwane ke liye Admin se WhatsApp par rabta karein.</p>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <a id="lockModalWa" target="_blank" class="btn btn-wa btn-full">💬 Unlock on WhatsApp</a>
+      <button id="closeLockModal" class="btn btn-outline btn-full">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN HIDDEN IN-APP PDF READER -->
+<div id="pdfReader" class="reader-overlay hidden" oncontextmenu="return false;">
+  <div class="reader-bar">
+    <button id="closeReaderBtn" class="hdr-icon-btn">← Back</button>
+    <div id="readerTitle" class="reader-title">Document</div>
+    <button id="readerStarBtn" class="hdr-icon-btn" title="Bookmark">☆</button>
+    <a id="readerReportBtn" target="_blank" class="hdr-icon-btn" title="Report PDF Issue">⚠️</a>
+  </div>
+  <div class="reader-stage">
+    <div class="popout-shield" title="Protected by TaleemBox">TB 🔒</div>
+    <div id="watermarkLayer" class="watermark-layer"></div>
+    <iframe id="readerIframe" class="reader-frame" sandbox="allow-scripts allow-same-origin allow-forms" allow="fullscreen"></iframe>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, doc, getDocs, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { firebaseConfig, ADMIN_EMAIL, DEFAULT_WHATSAPP } from "./firebase-config.js";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Register Service Worker for PWA
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+
+  let deferredPrompt = null;
+  let state = {
+    authUser: null,
+    profile: null,
+    isAdminPreview: false,
+    settings: {
+      whatsapp: DEFAULT_WHATSAPP,
+      packagesText: "1 Month • 2 Months • 3 Months • Lifetime Plans Available",
+      maintenance: false,
+      dataVersion: 1
+    },
+    boxes: [],
+    subboxes: [],
+    pdfs: [],
+    activeBox: null,
+    activeSub: null,
+    activeSubject: "All",
+    activePdf: null,
+    bookmarks: JSON.parse(localStorage.getItem("tb_bookmarks") || "[]"),
+    lastReadId: localStorage.getItem("tb_last_read") || ""
+  };
+
+  const $ = (id) => document.getElementById(id);
+  function esc(str) {
+    return String(str || "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+  }
+  function showToast(msg, type = "success") {
+    const t = $("toast");
+    t.textContent = msg;
+    t.className = `toast ${type}`;
+    t.classList.remove("hidden");
+    setTimeout(() => t.classList.add("hidden"), 3000);
+  }
+  function todayStr() { return new Date().toISOString().split("T")[0]; }
+  function getDaysLeft(u) {
+    if (u.isLifetime || !u.expiryDate) return 99999;
+    const now = new Date(todayStr() + "T00:00:00");
+    const exp = new Date(u.expiryDate + "T00:00:00");
+    return Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
+  }
+  function waLink(text) {
+    const num = (state.settings.whatsapp || DEFAULT_WHATSAPP).replace(/\D/g, "");
+    return `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+  }
+  function getDeviceId() {
+    let id = localStorage.getItem("tb_device_id");
+    if (!id) {
+      id = "DEV-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+      localStorage.setItem("tb_device_id", id);
+    }
+    return id;
+  }
+  function isNewPdf(p) {
+    if (!p.createdAtMs) return false;
+    return (Date.now() - p.createdAtMs) < (7 * 24 * 60 * 60 * 1000);
+  }
+  function isBoxUnlocked(boxId) {
+    if (state.isAdminPreview) return true;
+    return (state.profile?.allowedBoxes || []).includes(boxId);
+  }
+  function boxHasDemo(boxId) {
+    return state.pdfs.some((p) => p.boxId === boxId && p.isFreeDemo);
+  }
+  function subHasDemo(subId) {
+    return state.pdfs.some((p) => p.subboxId === subId && p.isFreeDemo);
+  }
+
+  // Dark Mode Init
+  function applyTheme(dark) {
+    document.body.classList.toggle("dark", dark);
+    $("themeToggleTop").textContent = dark ? "☀️" : "🌙";
+    localStorage.setItem("tb_dark", dark ? "1" : "0");
+  }
+  applyTheme(localStorage.getItem("tb_dark") === "1");
+  $("themeToggleTop").onclick = () => applyTheme(!document.body.classList.contains("dark"));
+  $("settingDarkBtn").onclick = () => applyTheme(!document.body.classList.contains("dark"));
+
+  // PWA Install Handling
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    $("installBtnLogin").classList.remove("hidden");
+    $("installBtnHeader").classList.remove("hidden");
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredPrompt = null;
+    $("installBtnLogin").classList.add("hidden");
+    $("installBtnHeader").classList.add("hidden");
+    showToast("TaleemBox App Installed!");
+  });
+
+  async function triggerInstall() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") deferredPrompt = null;
+    } else {
+      const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      if (isIos) {
+        alert("iPhone/iPad par install karne ke liye Safari mein neeche Share (↑) button dabayein aur 'Add to Home Screen' par click karein.");
+      } else {
+        alert("Agar app pehle se install nahi hai, toh browser ke upar right side mein 3 dots (⋮) par click kar ke 'Install App' ya 'Add to Home screen' select karein.");
+      }
+    }
+  }
+  $("installBtnLogin").onclick = triggerInstall;
+  $("installBtnHeader").onclick = triggerInstall;
+  $("settingInstallBtn").onclick = triggerInstall;
+
+  // Password Toggle
+  $("toggleEye").onclick = () => {
+    const inp = $("loginPass");
+    inp.type = inp.type === "password" ? "text" : "password";
+  };
+
+  // Load Public Settings (WhatsApp, Packages, Maintenance, DataVersion)
+  async function loadPublicSettings() {
+    try {
+      const snap = await getDoc(doc(db, "settings", "public"));
+      if (snap.exists()) {
+        state.settings = { ...state.settings, ...snap.data() };
+      }
+    } catch (e) {}
+    $("loginPackagesBox").textContent = state.settings.packagesText || "1 Month • 2 Months • 3 Months • Lifetime Plans Available";
+    $("loginWaBtn").href = waLink("Assalam-o-Alaikum! Mujhe TaleemBox app ki subscription chahiye. Details aur packages bata dein.");
+  }
+
+  function showOnlyScreen(id) {
+    ["loadingScreen", "statusScreen", "loginScreen", "mainApp"].forEach((s) => $(s).classList.add("hidden"));
+    $(id).classList.remove("hidden");
+  }
+
+  function showStatusScreen(icon, title, msg, waText, showLogout = true) {
+    $("stIcon").textContent = icon;
+    $("stTitle").textContent = title;
+    $("stMsg").textContent = msg;
+    $("stWaBtn").href = waLink(waText);
+    $("stLogoutBtn").classList.toggle("hidden", !showLogout);
+    showOnlyScreen("statusScreen");
+  }
+
+  $("stRetryBtn").onclick = () => window.location.reload();
+  $("stLogoutBtn").onclick = () => signOut(auth);
+
+  // Smart Cached Library Loader (Zero Extra Load on Firestore!)
+  async function loadLibrary(forceRefresh = false) {
+    const remoteVer = String(state.settings.dataVersion || 1);
+    const localVer = localStorage.getItem("tb_cache_ver");
+    const cachedRaw = localStorage.getItem("tb_cache_data");
+
+    if (!forceRefresh && localVer === remoteVer && cachedRaw) {
+      try {
+        const parsed = JSON.parse(cachedRaw);
+        state.boxes = parsed.boxes || [];
+        state.subboxes = parsed.subboxes || [];
+        state.pdfs = parsed.pdfs || [];
+        return;
+      } catch (e) {}
+    }
+
+    const [bSnap, sSnap, pSnap] = await Promise.all([
+      getDocs(collection(db, "boxes")),
+      getDocs(collection(db, "subboxes")),
+      getDocs(collection(db, "pdfs"))
+    ]);
+
+    state.boxes = bSnap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order || 99) - (b.order || 99));
+    state.subboxes = sSnap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order || 99) - (b.order || 99));
+    state.pdfs = pSnap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+
+    localStorage.setItem("tb_cache_ver", remoteVer);
+    localStorage.setItem("tb_cache_data", JSON.stringify({
+      boxes: state.boxes, subboxes: state.subboxes, pdfs: state.pdfs
+    }));
+  }
+
+  // Auth Listener & Smart Device Lock Verification
+  onAuthStateChanged(auth, async (user) => {
+    await loadPublicSettings();
+
+    if (!user) {
+      state.authUser = null;
+      state.profile = null;
+      if (state.settings.maintenance) {
+        return showStatusScreen("🛠️", "App Under Maintenance", "Naye notes update ho rahe hain. Meherbani farma kar thori der baad dobara kholein.", "Assalam-o-Alaikum! TaleemBox maintenance kab tak complete hogi?", false);
+      }
+      showOnlyScreen("loginScreen");
+      return;
+    }
+
+    state.authUser = user;
+    state.isAdminPreview = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+    if (state.settings.maintenance && !state.isAdminPreview) {
+      return showStatusScreen("🛠️", "App Under Maintenance", "Naye notes update ho rahe hain. Meherbani farma kar thori der baad dobara kholein.", "Assalam-o-Alaikum! TaleemBox maintenance kab tak complete hogi?", true);
+    }
+
+    if (state.isAdminPreview) {
+      state.profile = {
+        name: "Admin Preview",
+        email: user.email,
+        phone: state.settings.whatsapp || DEFAULT_WHATSAPP,
+        planLabel: "Admin Access",
+        isLifetime: true,
+        maxDevices: 99,
+        devices: ["ADMIN"],
+        allowedBoxes: []
+      };
+    } else {
+      try {
+        const uSnap = await getDoc(doc(db, "users", user.uid));
+        if (!uSnap.exists()) {
+          return showStatusScreen("❌", "Account Not Active", "Aapka subscription record nahi mila ya remove kar diya gaya hai. Admin se rabta karein.", `Assalam-o-Alaikum! Mera TaleemBox account (${user.email}) active nahi aa raha.`);
+        }
+        const u = uSnap.data();
+
+        // 1. Blocked check
+        if (u.blocked) {
+          return showStatusScreen("🚫", "Account Blocked", "Aapka account Admin ki taraf se temporarily block kar diya gaya hai. Tafseel ke liye rabta karein.", `Assalam-o-Alaikum! Mera TaleemBox account (${u.email}) block aa raha hai, please check karein.`);
+        }
+
+        // 2. Expiry check
+        const daysLeft = getDaysLeft(u);
+        if (!u.isLifetime && daysLeft < 0) {
+          return showStatusScreen("⏰", "Subscription Expired", `Aapka ${u.planLabel || ""} plan (${u.expiryDate}) khatam ho chuka hai. Dobara shuru karwane ke liye WhatsApp par renew karwayein.`, `Assalam-o-Alaikum! Mera TaleemBox plan expire ho gaya hai (${u.email}). Please renew kar dein.`);
+        }
+
+        // 3. Smart Device Lock check
+        const myDev = getDeviceId();
+        const existingDevs = Array.isArray(u.devices) ? [...u.devices] : [];
+        const maxDevs = Number(u.maxDevices || 1);
+
+        if (!existingDevs.includes(myDev)) {
+          if (existingDevs.length >= maxDevs) {
+            return showStatusScreen(
+              "📱",
+              "Device Limit Reached",
+              `Aapka account pehle hi ${maxDevs} device(s) par login hai. Agar aapne mobile badla hai ya browser clear kiya hai, toh Admin se devices reset karwayein.`,
+              `Assalam-o-Alaikum! Mere TaleemBox account (${u.email}) par Device Limit poori aa rahi hai. Please devices reset kar dein.`
+            );
+          }
+          existingDevs.push(myDev);
+          await updateDoc(doc(db, "users", user.uid), {
+            devices: existingDevs,
+            lastLogin: new Date().toISOString()
+          });
+          u.devices = existingDevs;
+        } else {
+          updateDoc(doc(db, "users", user.uid), {
+            devices: existingDevs,
+            lastLogin: new Date().toISOString()
+          }).catch(() => {});
+        }
+
+        state.profile = u;
+      } catch (err) {
+        return showStatusScreen("⚠️", "Connection Error", "Internet check kar ke dobara koshish karein: " + err.message, "Assalam-o-Alaikum! TaleemBox login mein error aa raha hai.");
+      }
+    }
+
+    await loadLibrary(false);
+    renderAllViews();
+    showOnlyScreen("mainApp");
+  });
+
+  // Login Form Submit
+  $("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("loginSubmitBtn");
+    btn.disabled = true; btn.textContent = "Signing in...";
+    try {
+      await signInWithEmailAndPassword(auth, $("loginEmail").value.trim(), $("loginPass").value.trim());
+    } catch (err) {
+      let msg = "Gmail ya Password ghalat hai!";
+      if (err.code === "auth/too-many-requests") msg = "Bohat zyada koshishein! Thori der baad try karein.";
+      showToast(msg, "error");
+    } finally {
+      btn.disabled = false; btn.textContent = "Sign In";
+    }
+  });
+
+  // Bottom Nav Switching
+  function switchView(viewName) {
+    document.querySelectorAll(".app-view").forEach((v) => v.classList.add("hidden"));
+    document.querySelectorAll(".bnav-btn").forEach((b) => b.classList.remove("active"));
+    $("view-" + viewName).classList.remove("hidden");
+    document.querySelector(`.bnav-btn[data-view="${viewName}"]`).classList.add("active");
+
+    if (viewName === "home") showHomeLevel(1);
+    if (viewName === "search") renderSearch();
+    if (viewName === "saved") renderSaved();
+    if (viewName === "settings") renderProfile();
+  }
+  document.querySelectorAll(".bnav-btn").forEach((b) => {
+    b.onclick = () => switchView(b.dataset.view);
+  });
+
+  function showHomeLevel(level) {
+    $("homeLevel1").classList.toggle("hidden", level !== 1);
+    $("homeLevel2").classList.toggle("hidden", level !== 2);
+    $("homeLevel3").classList.toggle("hidden", level !== 3);
+    window.scrollTo(0, 0);
+  }
+
+  $("backToHomeBtn").onclick = () => showHomeLevel(1);
+  $("backToSubBtn").onclick = () => showHomeLevel(2);
+
+  // Render All Views
+  function renderAllViews() {
+    const u = state.profile;
+    $("welcomeUser").textContent = `Welcome, ${u.name || "Student"}`;
+    const chip = $("planStatusChip");
+    if (u.isLifetime) {
+      chip.textContent = state.isAdminPreview ? "Admin Preview" : "Lifetime Plan";
+      chip.classList.remove("warn");
+    } else {
+      const days = getDaysLeft(u);
+      chip.textContent = days <= 3 ? `⚠️ ${days === 0 ? "Expires Today" : days + "d left"}` : `${days} days left`;
+      chip.classList.toggle("warn", days <= 3);
+    }
+    renderHomeBoxes();
+    renderProfile();
+    renderSaved();
+  }
+
+  // LEVEL 1: Main Square Boxes
+  function renderHomeBoxes() {
+    const grid = $("boxesGrid");
+    if (!state.boxes.length) {
+      grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:30px;">Library abhi update ho rahi hai...</p>`;
+      return;
+    }
+
+    grid.innerHTML = state.boxes.map((b) => {
+      const unlocked = isBoxUnlocked(b.id);
+      const demo = !unlocked && boxHasDemo(b.id);
+      const count = state.pdfs.filter((p) => p.boxId === b.id).length;
+
+      return `
+        <div class="box-card ${unlocked ? "unlocked" : "locked"}" data-id="${b.id}">
+          ${demo ? `<span class="badge-demo-pill">🎁 Demo</span>` : ""}
+          <span class="box-badge-top ${unlocked ? "badge-open" : "badge-lock"}">${unlocked ? "✓ Open" : "🔒"}</span>
+          <div class="box-emoji">${esc(b.icon || "📘")}</div>
+          <div class="box-name">${esc(b.name)}</div>
+          <div class="box-count">${count} PDF${count === 1 ? "" : "s"}</div>
+        </div>`;
+    }).join("");
+
+    grid.querySelectorAll(".box-card").forEach((card) => {
+      card.onclick = () => {
+        const box = state.boxes.find((x) => x.id === card.dataset.id);
+        if (!box) return;
+        const unlocked = isBoxUnlocked(box.id);
+        if (!unlocked && !boxHasDemo(box.id)) {
+          openLockModal(box.name);
+          return;
+        }
+        state.activeBox = box;
+        renderSubBoxes(box);
+        showHomeLevel(2);
+      };
+    });
+  }
+
+  // LEVEL 2: Sub-Boxes inside Selected Class
+  function renderSubBoxes(box) {
+    $("selectedBoxTitle").textContent = `${box.icon || "📘"} ${box.name}`;
+    const unlocked = isBoxUnlocked(box.id);
+    const subs = state.subboxes.filter((s) => s.boxId === box.id);
+    const grid = $("subBoxesGrid");
+
+    if (!subs.length) {
+      grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:30px;">Is box mein abhi koi folder add nahi hua.</p>`;
+      return;
+    }
+
+    grid.innerHTML = subs.map((s) => {
+      const count = state.pdfs.filter((p) => p.subboxId === s.id).length;
+      const demo = !unlocked && subHasDemo(s.id);
+      return `
+        <div class="box-card ${unlocked || demo ? "unlocked" : "locked"}" data-id="${s.id}">
+          ${demo ? `<span class="badge-demo-pill">🎁 Free Demo</span>` : ""}
+          <span class="box-badge-top ${unlocked ? "badge-open" : "badge-lock"}">${unlocked ? "Open" : "🔒"}</span>
+          <div class="box-emoji">${esc(s.icon || "📝")}</div>
+          <div class="box-name">${esc(s.name)}</div>
+          <div class="box-count">${count} PDF${count === 1 ? "" : "s"}</div>
+        </div>`;
+    }).join("");
+
+    grid.querySelectorAll(".box-card").forEach((card) => {
+      card.onclick = () => {
+        const sub = subs.find((x) => x.id === card.dataset.id);
+        if (!sub) return;
+        if (!unlocked && !subHasDemo(sub.id)) {
+          openLockModal(`${box.name} (${sub.name})`);
+          return;
+        }
+        state.activeSub = sub;
+        state.activeSubject = "All";
+        renderPdfList(box, sub);
+        showHomeLevel(3);
+      };
+    });
+  }
+
+  // LEVEL 3: PDFs List + Auto-Hide Subject Filter
+  function renderPdfList(box, sub) {
+    $("selectedSubTitle").textContent = `${box.name} › ${sub.name}`;
+    const allPdfs = state.pdfs.filter((p) => p.subboxId === sub.id);
+
+    // Auto-Hide Subject Filter
+    const subjects = [...new Set(allPdfs.map((p) => (p.subject || "").trim()).filter(Boolean))];
+    const bar = $("subjectFilterBar");
+    if (subjects.length > 0) {
+      bar.classList.remove("hidden");
+      bar.innerHTML = ["All", ...subjects].map((subj) =>
+        `<button class="subj-pill ${state.activeSubject === subj ? "active" : ""}" data-s="${esc(subj)}">${esc(subj)}</button>`
+      ).join("");
+      bar.querySelectorAll(".subj-pill").forEach((btn) => {
+        btn.onclick = () => {
+          state.activeSubject = btn.dataset.s;
+          renderPdfList(box, sub);
+        };
+      });
+    } else {
+      bar.classList.add("hidden");
+      state.activeSubject = "All";
+    }
+
+    const filtered = state.activeSubject === "All"
+      ? allPdfs
+      : allPdfs.filter((p) => (p.subject || "").trim() === state.activeSubject);
+
+    renderPdfCardsInto($("pdfCardsList"), filtered, "Is folder mein abhi koi PDF upload nahi hui.");
+  }
+
+  // Reusable PDF Cards Renderer
+  function renderPdfCardsInto(container, list, emptyMsg) {
+    if (!list.length) {
+      container.innerHTML = `<p style="text-align:center;color:var(--muted);padding:26px;font-size:13.5px;">${emptyMsg}</p>`;
+      return;
+    }
+
+    container.innerHTML = list.map((p) => {
+      const box = state.boxes.find((b) => b.id === p.boxId);
+      const canRead = isBoxUnlocked(p.boxId) || !!p.isFreeDemo;
+      const starred = state.bookmarks.includes(p.id);
+      return `
+        <div class="pdf-card">
+          <div class="pdf-info">
+            <div class="pdf-title">${esc(p.title)}</div>
+            <div class="pdf-meta">
+              ${isNewPdf(p) ? `<span class="tag-new">NEW</span>` : ""}
+              ${p.subject ? `<span class="tag-subj">${esc(p.subject)}</span>` : ""}
+              ${p.isFreeDemo && !isBoxUnlocked(p.boxId) ? `<span class="tag-demo">🎁 Free Demo</span>` : ""}
+              <span>${esc(box ? box.name : "")} ${p.sizeMB && p.sizeMB !== "—" ? "• " + esc(p.sizeMB) : ""}</span>
+            </div>
+          </div>
+          <div class="pdf-right">
+            <button class="star-btn" data-star="${p.id}" title="Save">${starred ? "⭐" : "☆"}</button>
+            ${canRead
+              ? `<button class="btn btn-primary btn-sm open-pdf" data-id="${p.id}">📖 Read</button>`
+              : `<button class="btn btn-gold btn-sm locked-pdf" data-box="${esc(box ? box.name : "this section")}">🔒 Unlock</button>`
+            }
+          </div>
+        </div>`;
+    }).join("");
+
+    container.querySelectorAll("[data-star]").forEach((btn) => {
+      btn.onclick = () => {
+        toggleBookmark(btn.dataset.star);
+        btn.textContent = state.bookmarks.includes(btn.dataset.star) ? "⭐" : "☆";
+      };
+    });
+    container.querySelectorAll(".open-pdf").forEach((btn) => {
+      btn.onclick = () => {
+        const pdf = state.pdfs.find((x) => x.id === btn.dataset.id);
+        if (pdf) openReader(pdf);
+      };
+    });
+    container.querySelectorAll(".locked-pdf").forEach((btn) => {
+      btn.onclick = () => openLockModal(btn.dataset.box);
+    });
+  }
+
+  function toggleBookmark(pdfId) {
+    if (state.bookmarks.includes(pdfId)) {
+      state.bookmarks = state.bookmarks.filter((id) => id !== pdfId);
+      showToast("Removed from Saved");
+    } else {
+      state.bookmarks.unshift(pdfId);
+      showToast("Saved to Bookmarks ⭐");
+    }
+    localStorage.setItem("tb_bookmarks", JSON.stringify(state.bookmarks));
+    renderSaved();
+  }
+
+  // Search View
+  function renderSearch() {
+    const q = $("globalSearchInput").value.trim().toLowerCase();
+    if (!q) {
+      $("searchResultsList").innerHTML = `<p style="text-align:center;color:var(--muted);padding:30px;font-size:13.5px;">Kisi bhi book, chapter ya subject ka naam likhein...</p>`;
+      return;
+    }
+    const matches = state.pdfs.filter((p) => {
+      const boxName = state.boxes.find((b) => b.id === p.boxId)?.name || "";
+      return (p.title || "").toLowerCase().includes(q) ||
+             (p.subject || "").toLowerCase().includes(q) ||
+             boxName.toLowerCase().includes(q);
+    });
+    renderPdfCardsInto($("searchResultsList"), matches, "Is naam se koi book ya notes nahi mile.");
+  }
+  $("globalSearchInput").addEventListener("input", renderSearch);
+
+  // Saved & Resume View
+  function renderSaved() {
+    const lastPdf = state.pdfs.find((p) => p.id === state.lastReadId);
+    if (lastPdf && (isBoxUnlocked(lastPdf.boxId) || lastPdf.isFreeDemo)) {
+      $("resumeBox").classList.remove("hidden");
+      renderPdfCardsInto($("resumeCardSlot"), [lastPdf], "");
+    } else {
+      $("resumeBox").classList.add("hidden");
+    }
+
+    const savedPdfs = state.bookmarks.map((id) => state.pdfs.find((p) => p.id === id)).filter(Boolean);
+    renderPdfCardsInto($("savedList"), savedPdfs, "Abhi aapne koi PDF bookmark (⭐) nahi ki.");
+  }
+
+  // Profile & Settings View
+  function renderProfile() {
+    const u = state.profile;
+    if (!u) return;
+    $("profName").textContent = u.name || "—";
+    $("profEmail").textContent = u.email || "—";
+    $("profPlan").textContent = u.planLabel || "Active";
+    $("profExpiry").textContent = u.isLifetime ? "Lifetime (Never Expires)" : `${u.expiryDate} (${getDaysLeft(u)} days left)`;
+    $("profDevices").textContent = `${(u.devices || []).length} / ${u.maxDevices || 1}`;
+    const names = state.isAdminPreview
+      ? "All Boxes (Admin)"
+      : (u.allowedBoxes || []).map((id) => state.boxes.find((b) => b.id === id)?.name).filter(Boolean).join(", ") || "None";
+    $("profBoxes").textContent = names;
+
+    $("renewWaBtn").href = waLink(`Assalam-o-Alaikum! Mujhe apna TaleemBox plan renew ya upgrade karwana hai. Meri Gmail: ${u.email}`);
+    $("settingHelpWa").href = waLink(`Assalam-o-Alaikum! Mujhe TaleemBox app mein madad chahiye. Meri Gmail: ${u.email}`);
+  }
+
+  $("settingSyncBtn").onclick = async () => {
+    showToast("Refreshing library...");
+    await loadPublicSettings();
+    await loadLibrary(true);
+    renderAllViews();
+    showToast("✅ Library Updated!");
+  };
+  $("settingLogoutBtn").onclick = () => {
+    if (confirm("Kya aap logout karna chahte hain?")) signOut(auth);
+  };
+
+  // Lock Modal
+  function openLockModal(boxName) {
+    $("lockModalTitle").textContent = `${boxName} is Locked`;
+    $("lockModalMsg").textContent = `"${boxName}" aapke current plan mein unlock nahi hai. Ise unlock karwane ke liye neeche WhatsApp button par click karein.`;
+    $("lockModalWa").href = waLink(`Assalam-o-Alaikum! Mujhe TaleemBox par "${boxName}" ki subscription chahiye. Meri Gmail: ${state.profile?.email || ""}`);
+    $("lockModal").classList.remove("hidden");
+  }
+  $("closeLockModal").onclick = () => $("lockModal").classList.add("hidden");
+
+  // Fullscreen Hidden PDF Reader + Watermark
+  function openReader(pdf) {
+    state.activePdf = pdf;
+    state.lastReadId = pdf.id;
+    localStorage.setItem("tb_last_read", pdf.id);
+
+    $("readerTitle").textContent = pdf.title;
+    $("readerStarBtn").textContent = state.bookmarks.includes(pdf.id) ? "⭐" : "☆";
+    $("readerReportBtn").href = waLink(`Assalam-o-Alaikum! TaleemBox par yeh PDF open nahi ho rahi: "${pdf.title}". Meri Gmail: ${state.profile?.email || ""}`);
+
+    // Watermark repeats student's phone + email
+    const wmText = `${state.profile?.phone || ""} • ${state.profile?.email || "TaleemBox"}`;
+    $("watermarkLayer").innerHTML = Array(5).fill(`<div class="wm-text">${esc(wmText)}</div>`).join("");
+
+    $("readerIframe").src = `https://drive.google.com/file/d/${encodeURIComponent(pdf.fileId)}/preview`;
+    $("pdfReader").classList.remove("hidden");
+  }
+
+  $("closeReaderBtn").onclick = () => {
+    $("pdfReader").classList.add("hidden");
+    $("readerIframe").src = "about:blank";
+    renderSaved();
+  };
+  $("readerStarBtn").onclick = () => {
+    if (!state.activePdf) return;
+    toggleBookmark(state.activePdf.id);
+    $("readerStarBtn").textContent = state.bookmarks.includes(state.activePdf.id) ? "⭐" : "☆";
+  };
+</script>
+</body>
+</html>
